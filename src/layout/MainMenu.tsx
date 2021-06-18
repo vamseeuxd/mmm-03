@@ -41,11 +41,11 @@ export default function MainMenu(props: { dark: boolean, toggleMainMenu: () => v
                         <Card key={menu.label} dark={dark} className='rounded-0 mb-2 mt-1 py-2 px-2 mx-4'>
                             <div className='m-0 p-0 d-flex justify-content-start align-items-center mb-2'>
                                 <label>{menu.label}</label>
-                                <IconButton size='small' onClick={() => onMenuToggleClick(menu)}
+                                <IconButton dark={dark} size='small' onClick={() => onMenuToggleClick(menu)}
                                             className='ms-auto button-mode'><Icon
                                     className={menu.open ? 'plus-icon close' : 'plus-icon'} path={mdiPlus} size={0.8}/></IconButton>
                             </div>
-                            <Card inset className={menu.open ? 'rounded-0 border sub-menu open' : 'sub-menu'}>
+                            <Card inset className={menu.open ? 'rounded-0 sub-menu open' : 'sub-menu'}>
                                 <CardContent>
 
                                 </CardContent>

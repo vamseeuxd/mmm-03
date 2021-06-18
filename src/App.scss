@@ -70,13 +70,16 @@ $appHorizontalPadding: 20px;
   .main-menu-card {
     width: calc(100vw - #{$appHorizontalPadding * 2});
     height: calc(100vh - #{$appVerticalPadding * 2});
-    .vertical-menu{
+
+    .vertical-menu {
       height: calc(100vh - 100px);
       overflow-y: auto;
+
       .sub-menu {
         height: 0;
         overflow: hidden;
         transition: height .2s ease-in-out;
+
         &.open {
           height: 200px;
           overflow: auto;
@@ -102,5 +105,33 @@ div[role="dialog"] {
 
   &.close {
     transform: rotate(45deg);
+  }
+}
+
+
+.manage-theme-dialog {
+  .manage-theme-card {
+    width: calc(100vw - #{$appHorizontalPadding * 2});
+    height: calc(100vh - #{$appVerticalPadding * 2});
+    max-width: 400px;
+
+    &.add-them-card {
+      width: calc(100vw - #{$appHorizontalPadding * 4});
+      height: calc(100vh - #{$appVerticalPadding * 6});
+
+      .add-theme-input {
+        width: 92%;
+
+        div {
+          width: 100%;
+          label{
+            opacity: 0.5;
+          }
+          input {
+            width: 100%;
+          }
+        }
+      }
+    }
   }
 }
