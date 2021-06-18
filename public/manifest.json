@@ -1,0 +1,63 @@
+{
+  "short_name": "MMM-03",
+  "name": "Monthly Money Manager",
+  "orientation": "portrait",
+  "categories": ["finance", "utilities"],
+  "description": "Monthly Money Manager offers a unique planning experience for every individual who want's to manage money & assets , by providing the best expense tracking, budgeting, banking and evaluating taxes.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Manage Fixed Incomes",
+      "short_name": "Fixed Incomes",
+      "description": "Manage Fixed Incomes",
+      "url": "./",
+      "icons": [{ "src": "/icons/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Manage Fixed Expenses",
+      "short_name": "Fixed Expenses",
+      "description": "Fixed Expenses",
+      "url": "./",
+      "icons": [{ "src": "/icons/logo192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "screenshot1.webp",
+      "sizes": "1280x720",
+      "type": "image/webp"
+    }
+  ],
+  "start_url": "https://mmm-03.web.app/",
+  "display": "standalone",
+  "theme_color": "#dd0031",
+  "background_color": "#dd0031"
+}
