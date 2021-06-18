@@ -1,0 +1,106 @@
+@use "sass:math";
+
+$appVerticalPadding: 20px;
+$appHorizontalPadding: 20px;
+.over-flow-off {
+  overflow: hidden;
+}
+
+.over-flow-x-off {
+  overflow-x: hidden;
+}
+
+.over-flow-y-off {
+  overflow-y: hidden;
+}
+
+.main-page-container {
+  width: calc(100vw - #{$appHorizontalPadding});
+  height: calc(100vh - #{$appVerticalPadding});
+  overflow: hidden;
+}
+
+.app-footer {
+  padding: 0 math.div($appHorizontalPadding, 2);
+  bottom: math.div($appVerticalPadding, 2);
+
+  .toggle-button-group {
+    box-shadow: var(--box-shadow);
+    background: var(--bg-color);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+
+    .footer-tab-button {
+      --btn-height: 70px;
+
+      .icon-label {
+        font-size: 8px;
+        padding: 0;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.app-header {
+  padding: 0 math.div($appHorizontalPadding, 2);
+  top: math.div($appVerticalPadding, 2);
+
+  .header-content {
+    box-shadow: var(--box-shadow);
+    background: var(--bg-color);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    position: relative;
+
+    .header-menu-button {
+      --btn-height: 35px;
+      margin-left: -15px;
+
+      .icon-label {
+        font-size: 8px;
+        padding: 0;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.main-menu-dialog {
+  .main-menu-card {
+    width: calc(100vw - #{$appHorizontalPadding * 2});
+    height: calc(100vh - #{$appVerticalPadding * 2});
+    .vertical-menu{
+      height: calc(100vh - 100px);
+      overflow-y: auto;
+      .sub-menu {
+        height: 0;
+        overflow: hidden;
+        transition: height .2s ease-in-out;
+        &.open {
+          height: 200px;
+          overflow: auto;
+          transition: height 0.2s ease-in-out;
+        }
+      }
+    }
+  }
+}
+
+div[role="dialog"] {
+  ._3Reny {
+    opacity: 0.5;
+  }
+}
+
+.button-mode {
+  cursor: pointer;
+}
+
+.plus-icon {
+  transition: all ease-in-out 0.2s;
+
+  &.close {
+    transform: rotate(45deg);
+  }
+}
