@@ -2,6 +2,7 @@ import React from 'react';
 import {IconButton, Subtitle2} from "ui-neumorphism";
 import Icon from "@mdi/react";
 import {mdiMenu} from "@mdi/js";
+import ThemedButton from "./Themed-button";
 
 export default function Header(props: { dark: boolean, toggleMainMenu: () => void }) {
     const {dark, toggleMainMenu} = props;
@@ -14,10 +15,11 @@ export default function Header(props: { dark: boolean, toggleMainMenu: () => voi
                             text={false}
                             className='header-menu-button'
                             dark={dark} size='large' rounded>
-                    <Icon path={mdiMenu} size={1} color='var(--primary)'/>
+                    <Icon path={mdiMenu} size={1}/>
                 </IconButton>
 
                 <Subtitle2 dark={dark} className='m-0 p-0 ms-3'>Monthly Money Manager</Subtitle2>
+                <ThemedButton/>
             </div>
         </div>
     )

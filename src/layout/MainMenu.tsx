@@ -31,7 +31,6 @@ export default function MainMenu(props: { dark: boolean, toggleMainMenu: () => v
                 <Icon
                     path={mdiCloseThick}
                     size={0.7}
-                    color='var(--primary)'
                 />
             </IconButton>
 
@@ -51,7 +50,7 @@ export default function MainMenu(props: { dark: boolean, toggleMainMenu: () => v
 
                                 </CardContent>
                                 <CardAction>
-                                    <Button text color='var(--primary)'>Learn More</Button>
+                                    <Button text>Learn More</Button>
                                 </CardAction>
                             </Card>
                         </Card>

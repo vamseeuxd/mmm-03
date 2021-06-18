@@ -22,7 +22,7 @@ export default function Footer(props: { dark: boolean }) {
                                     active={activeButton === button.name}
                                     className='footer-tab-button' dark={dark} size='large' rounded>
                             <div className='pt-2 d-flex flex-column justify-content-center align-items-center py-2'>
-                                <Icon path={button.icon} size={0.9} color='var(--primary)'/>
+                                <Icon path={button.icon} size={0.9}/>
                                 <p className='icon-label m-0 mt-1 text-truncate'>{button.name}</p>
                             </div>
                         </IconButton>
