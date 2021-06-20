@@ -1,15 +1,50 @@
 import {mdiCloseThick} from "@mdi/js";
 import {Icon} from "@mdi/react";
-import React, {useContext, useEffect, useState} from "react";
-import {Button, Caption, Card, CardContent, Dialog, H6, IconButton, Subtitle2, TextField} from "ui-neumorphism";
+import React, {forwardRef, useContext, useEffect, useImperativeHandle, useState} from "react";
+import {
+    Button,
+    Caption,
+    Card,
+    CardContent,
+    Dialog,
+    H6,
+    IconButton,
+    Subtitle2,
+    Tab,
+    TabItem,
+    TabItems,
+    Tabs,
+    TextField
+} from "ui-neumorphism";
 import {FirebaseContext, ITheme} from "../../providers/firebase-context";
 import firebase from "firebase/app";
 
+const defaultTheme = {
+    "--light-bg-light-shadow": "#ffffff",
+    "--dark-bg": "#444444",
+    "id": "",
+    "name": "",
+    "default": false,
+    "--dark-bg-light-shadow": "#525252",
+    "--light-bg": "#E4EBF5",
+    "createdAt": {"seconds": 1623954600, "nanoseconds": 0},
+    "--light-bg-dark-shadow": "#bec8e4",
+    "--dark-bg-dark-shadow": "#363636",
+    "--primary-dark": "#2962ff",
+    "--primary": "#2979ff",
+    "--primary-light": "#82b1ff"
+};
 
-export default function AddOrUpdateThemePage(props: { dark: boolean, isEdit?: boolean, themeToEdit?: ITheme }) {
-    const {dark, isEdit, themeToEdit} = props;
+const AddOrUpdateThemePage = forwardRef((props: {
+                                             dark: boolean,
+                                             isEdit: boolean,
+                                             themeToEdit: ITheme | null,
+                                             ref: any,
+                                         },
+                                         ref) => {
+
+    const {dark, themeToEdit} = props;
     const [showAddThemesPageDialog, setShowAddThemesPageDialog] = useState(false);
-    const [selectedTheme, setSelectedTheme] = useState<string>('default');
     const [themeProps] = useState<string[]>([
         'light-bg',
         'light-bg-dark-shadow',
@@ -25,25 +60,13 @@ export default function AddOrUpdateThemePage(props: { dark: boolean, isEdit?: bo
     const {themes} = useContext(FirebaseContext);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [themesList, setThemesList] = useState<any[]>([]);
-    const [selectedValues, setSelectedValues] = useState<ITheme>({
-        "--light-bg-light-shadow": "#ffffff",
-        "--dark-bg": "#444444",
-        "id": "",
-        "name": "",
-        "default": false,
-        "--dark-bg-light-shadow": "#525252",
-        "--light-bg": "#E4EBF5",
-        "createdAt": {"seconds": 1623954600, "nanoseconds": 0},
-        "--light-bg-dark-shadow": "#bec8e4",
-        "--dark-bg-dark-shadow": "#363636",
-        "--primary-dark": "#2962ff",
-        "--primary": "#2979ff",
-        "--primary-light": "#82b1ff"
-    })
+    const [isEdit, setIsEdit] = useState<boolean>(props.isEdit);
+    const [activeTabIndex, setActiveTabIndex] = useState<Number>(0);
+    const [selectedValues, setSelectedValues] = useState<ITheme>(
+        (isEdit && themeToEdit) ? themeToEdit : defaultTheme);
 
     useEffect(() => {
         const _theme = window.localStorage.getItem('selectedTheme');
-        _theme && setSelectedTheme(_theme);
         const subs = themes.collection.subscribe((value: ITheme[]) => {
             setThemesList(value);
             const _selectedTheme = value.find(d => d.id === _theme);
@@ -56,15 +79,21 @@ export default function AddOrUpdateThemePage(props: { dark: boolean, isEdit?: bo
         };
     }, [themes.collection]);
 
-    useEffect(() => {
-        window.localStorage.setItem('selectedTheme', selectedTheme);
-    }, [selectedTheme]);
+    useImperativeHandle(ref, () => ({
+        setShowDialog: (show: boolean, themeToEdit: ITheme, isEdit: boolean) => {
+            setShowAddThemesPageDialog(show);
+            setIsEdit(isEdit);
+            setSelectedValues(themeToEdit);
+        }
+    }));
 
     const renderMainButton = () => {
         return (
-            <Button dark={dark} onClick={() => setShowAddThemesPageDialog(true)}
-                    className="border-0">Add
-                Theme</Button>
+            <Button dark={dark} onClick={() => {
+                setShowAddThemesPageDialog(true);
+                setIsEdit(false);
+                setSelectedValues(defaultTheme);
+            }} className="border-0">Add Theme</Button>
         )
     }
 
@@ -98,12 +127,12 @@ export default function AddOrUpdateThemePage(props: { dark: boolean, isEdit?: bo
                 <Icon path={mdiCloseThick} size={0.7}/>
             </IconButton>
         </Card>
-    )
+    );
+
 
     const renderMainContent = () => (
         <CardContent dark={dark}>
-            <Card dark={dark} className="py-2 ps-2"
-                  style={{height: 'calc(100vh - 275px)', overflowY: 'auto'}} inset>
+            <Card dark={dark} className="py-2 ps-2" style={{height: 'calc(100vh - 275px)', overflowY: 'auto'}} inset>
                 {renderAddThemeForm()}
             </Card>
         </CardContent>
@@ -114,6 +143,28 @@ export default function AddOrUpdateThemePage(props: { dark: boolean, isEdit?: bo
             ...selectedValues,
             [prop]: value
         });
+    };
+
+    const getFormControlsByTheme = (isDark = false) => {
+        return themeProps.filter(d => (d.toLowerCase().indexOf(isDark ? 'dark' : 'light') >= 0)).map(themeProp => {
+            // @ts-ignore
+            return (
+                <React.Fragment key={themeProp}>
+                    <div className="d-flex px-4 flex-row justify-content-between">
+                        <Subtitle2 dark={dark}
+                                   className="text-capitalize d-inline-block">{themeProp}</Subtitle2>
+                        {
+                            /* @ts-ignore */
+                            <input defaultValue={selectedValues['--' + themeProp]}
+                                   onChange={(e: any) => {
+                                       updateValue('--' + themeProp, e.target.value)
+                                   }}
+                                   type="color"/>
+                        }
+                    </div>
+                </React.Fragment>
+            )
+        })
     }
 
     const renderAddThemeForm = () => {
@@ -131,43 +182,60 @@ export default function AddOrUpdateThemePage(props: { dark: boolean, isEdit?: bo
                                label='Theme Name'
                                className='add-theme-input'/>
                 </div>
-                {
-                    themeProps.map(themeProp => {
-                        // @ts-ignore
-                        return (
-                            <React.Fragment key={themeProp}>
-                                <div className="d-flex px-4 flex-row justify-content-between">
-                                    <Subtitle2 dark={dark}
-                                               className="text-capitalize d-inline-block">{themeProp}</Subtitle2>
-                                    {
-                                        /* @ts-ignore */
-                                        <input defaultValue={selectedValues['--' + themeProp]}
-                                               onChange={(e: any) => {
-                                                   updateValue('--' + themeProp, e.target.value)
-                                               }}
-                                               type="color"/>
-                                    }
-                                </div>
-                            </React.Fragment>
-                        )
-                    })
-                }
+                <div className="d-flex px-3 flex-row justify-content-between">
+                    <div className="w-100">
+                        <Tabs dark={dark} value={activeTabIndex}
+                              onChange={(e: any) => setActiveTabIndex(e.active)}>
+                            <Tab dark={dark}>Drak Mode</Tab>
+                            <Tab dark={dark}>Light Mode</Tab>
+                        </Tabs>
+
+                        <TabItems dark={dark} value={activeTabIndex}>
+                            <TabItem dark={dark}>
+                                {getFormControlsByTheme(true)}
+                            </TabItem>
+                            <TabItem dark={dark}>
+                                {getFormControlsByTheme()}
+                            </TabItem>
+                        </TabItems>
+                    </div>
+                </div>
             </div>
         )
     }
 
     const saveTheme = async () => {
-        const docRef = themes.getDoc();
-        await docRef.set({
-            ...selectedValues,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        });
+        if (isEdit) {
+            const docRef = themes.getDoc(selectedValues.id);
+            await docRef.set({
+                ...selectedValues,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+        } else {
+            const docRef = themes.getDoc();
+            await docRef.set({
+                ...selectedValues,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+        }
         setShowAddThemesPageDialog(false);
     }
 
     const isNameUnique = (): boolean => {
-        return themesList
-            .filter(d => d.id.toLowerCase() === selectedValues.name.trim().toLowerCase()).length === 0;
+        debugger;
+        if (isEdit) {
+            return themesList
+                .filter(
+                    d => {
+                        return (
+                            d.name.toLowerCase() === selectedValues.name.trim().toLowerCase() &&
+                            d.id !== selectedValues.id
+                        )
+                    }).length === 0;
+        } else {
+            return themesList
+                .filter(d => d.name.toLowerCase() === selectedValues.name.trim().toLowerCase()).length === 0;
+        }
     }
 
     const isFormValid = (): boolean => {
@@ -218,4 +286,8 @@ export default function AddOrUpdateThemePage(props: { dark: boolean, isEdit?: bo
             </Dialog>
         </>
     )
-}
+
+
+});
+export default AddOrUpdateThemePage;
+

@@ -1,6 +1,6 @@
 import {mdiCloseThick, mdiLeadPencil, mdiOpacity, mdiTrashCanOutline} from "@mdi/js";
 import {Icon} from "@mdi/react";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import {
     Button,
     Card,
@@ -18,10 +18,13 @@ import {ThemeContext} from "../../providers/theme-context";
 
 
 export default function ManageThemePage() {
+    const addOrUpdateThemeRef = useRef();
     const {isDark, toggleDarkMode} = useContext(ThemeContext);
     // @ts-ignore
     const {themes} = useContext(FirebaseContext);
     const [themesList, setThemesList] = useState<any[]>([]);
+    const [isEdit, setIsEdit] = useState<boolean>(false);
+    const [themeToEdit, setThemeToEdit] = useState<ITheme | null>(null);
     const [showThemesListDialog, setShowThemesListDialog] = useState(false);
     const [selectedTheme, setSelectedTheme] = useState<any>(null);
 
@@ -111,6 +114,10 @@ export default function ManageThemePage() {
 
     const editTheme = (e: MouseEvent, theme: ITheme) => {
         e.stopPropagation();
+        setThemeToEdit(theme);
+        setIsEdit(true);
+        // @ts-ignore
+        addOrUpdateThemeRef?.current?.setShowDialog(true, theme, true);
     }
 
     const deleteTheme = (e: MouseEvent, theme: ITheme) => {
@@ -171,7 +178,7 @@ export default function ManageThemePage() {
             <div className="d-flex justify-content-center align-items-center me-auto ms-2">
                 <Button dark={isDark} onClick={() => toggleDarkMode(!isDark)}>Toggle Dark Mode</Button>
             </div>
-            <AddOrUpdateThemePage dark={isDark}/>
+            <AddOrUpdateThemePage ref={addOrUpdateThemeRef} isEdit={isEdit} themeToEdit={themeToEdit} dark={isDark}/>
         </Card>
     )
 
