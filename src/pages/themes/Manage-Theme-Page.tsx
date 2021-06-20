@@ -12,12 +12,12 @@ import {
     ToggleButton,
     ToggleButtonGroup
 } from "ui-neumorphism";
-import AddThemeButton from "./Add-theme-button";
+import AddOrUpdateThemePage from "./Add-Or-Update-Theme-Page";
 import {FirebaseContext, ITheme} from "../../providers/firebase-context";
 import {ThemeContext} from "../../providers/theme-context";
 
 
-export default function ThemeButton() {
+export default function ManageThemePage() {
     const {isDark, toggleDarkMode} = useContext(ThemeContext);
     // @ts-ignore
     const {themes} = useContext(FirebaseContext);
@@ -153,7 +153,7 @@ export default function ThemeButton() {
             <div className="d-flex justify-content-center align-items-center me-auto ms-2">
                 <Button dark={isDark} onClick={() => toggleDarkMode(!isDark)}>Toggle Dark Mode</Button>
             </div>
-            <AddThemeButton dark={isDark}/>
+            <AddOrUpdateThemePage dark={isDark}/>
         </Card>
     )
 

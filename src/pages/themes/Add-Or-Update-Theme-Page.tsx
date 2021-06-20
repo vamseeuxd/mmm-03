@@ -6,7 +6,7 @@ import {FirebaseContext, ITheme} from "../../providers/firebase-context";
 import firebase from "firebase/app";
 
 
-export default function AddThemeButton(props: { dark: boolean }) {
+export default function AddOrUpdateThemePage(props: { dark: boolean }) {
     const {dark} = props;
     const [showAddThemesPageDialog, setShowAddThemesPageDialog] = useState(false);
     const [selectedTheme, setSelectedTheme] = useState<string>('default');
