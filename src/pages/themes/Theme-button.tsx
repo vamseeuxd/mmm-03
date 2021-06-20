@@ -2,6 +2,7 @@ import {mdiCloseThick, mdiOpacity} from "@mdi/js";
 import {Icon} from "@mdi/react";
 import React, {useContext, useEffect, useState} from "react";
 import {
+    Button,
     Card,
     CardContent,
     Dialog,
@@ -13,24 +14,29 @@ import {
 } from "ui-neumorphism";
 import AddThemeButton from "./Add-theme-button";
 import {FirebaseContext, ITheme} from "../../providers/firebase-context";
+import {ThemeContext} from "../../providers/theme-context";
 
 
-export default function ThemedButton(props: { dark: boolean }) {
-    const {dark} = props;
+export default function ThemeButton() {
+    const {isDark, toggleDarkMode} = useContext(ThemeContext);
     // @ts-ignore
     const {themes} = useContext(FirebaseContext);
     const [themesList, setThemesList] = useState<any[]>([]);
     const [showThemesListDialog, setShowThemesListDialog] = useState(false);
-    const [selectedTheme, setSelectedTheme] = useState<string>('3');
+    const [selectedTheme, setSelectedTheme] = useState<any>(null);
 
     useEffect(() => {
         const _theme = window.localStorage.getItem('selectedTheme');
-        _theme && setSelectedTheme(_theme);
+        if (_theme !== 'null' && _theme) {
+            overrideThemeVariables(JSON.parse(_theme));
+            setSelectedTheme(JSON.parse(_theme));
+        }
         const subs = themes.collection.subscribe((value: ITheme[]) => {
             setThemesList(value);
-            const _selectedTheme = value.find(d => d.id === _theme);
-            if (_selectedTheme) {
+            const _selectedTheme = value.find(d => d.id === 'default');
+            if (_selectedTheme && !_theme) {
                 overrideThemeVariables(_selectedTheme);
+                setSelectedTheme(_selectedTheme);
             }
         });
         return () => {
@@ -39,17 +45,20 @@ export default function ThemedButton(props: { dark: boolean }) {
     }, [themes.collection]);
 
     useEffect(() => {
-        window.localStorage.setItem('selectedTheme', selectedTheme);
-        const _selectedTheme = themesList.find(d => d.id === selectedTheme);
-        if (_selectedTheme) {
-            overrideThemeVariables(_selectedTheme);
+        if (selectedTheme) {
+            const dataToStore = JSON.stringify(selectedTheme).replace(/\\/g, '');
+            window.localStorage.setItem('selectedTheme', dataToStore);
+            const _selectedTheme = themesList.find(d => d.id === selectedTheme?.id);
+            if (_selectedTheme) {
+                overrideThemeVariables(_selectedTheme);
+            }
         }
     }, [selectedTheme, themesList]);
 
     const renderMainButton = () => {
         return (
             <IconButton onClick={() => setShowThemesListDialog(true)}
-                        dark={dark}
+                        dark={isDark}
                         className="ms-auto border-0"
                         rounded
                         text={false}>
@@ -59,7 +68,7 @@ export default function ThemedButton(props: { dark: boolean }) {
     }
 
     const renderMainCard = () => (
-        <Card dark={dark} rounded elevation={5} className="manage-theme-card">
+        <Card dark={isDark} rounded elevation={5} className="manage-theme-card">
             {renderMainHeader()}
             {renderMainContent()}
             {renderMainFooter()}
@@ -68,7 +77,7 @@ export default function ThemedButton(props: { dark: boolean }) {
 
     const renderMainHeader = () => (
         <Card rounded flat bordered
-              dark={dark}
+              dark={isDark}
               className="
               d-flex
               rounded-0
@@ -80,8 +89,8 @@ export default function ThemedButton(props: { dark: boolean }) {
               border-end-0
               "
         >
-            <H6 dark={dark} className="ms-3 mt-2">Theme Configuration</H6>
-            <IconButton dark={dark} onClick={() => setShowThemesListDialog(false)}
+            <H6 dark={isDark} className="ms-3 mt-2">Theme Configuration</H6>
+            <IconButton dark={isDark} onClick={() => setShowThemesListDialog(false)}
                         className="mt-3 mb-2 border-0"
                         text={false}
                         size='small'
@@ -92,8 +101,8 @@ export default function ThemedButton(props: { dark: boolean }) {
     )
 
     const renderMainContent = () => (
-        <CardContent dark={dark}>
-            <Card dark={dark} className="py-1 px-3"
+        <CardContent dark={isDark}>
+            <Card dark={isDark} className="py-1 px-3"
                   style={{height: 'calc(100vh - 195px)', overflowY: 'auto'}} inset>
                 {renderThemesList()}
             </Card>
@@ -102,12 +111,12 @@ export default function ThemedButton(props: { dark: boolean }) {
 
     const renderThemesList = () => {
         return (
-            <ToggleButtonGroup dark={dark} value={selectedTheme} className="mt-2" multiple={false}>
+            <ToggleButtonGroup dark={isDark} value={selectedTheme?.id} className="mt-2" multiple={false}>
                 {
                     themesList && themesList.map(d => {
                         return (
-                            <ToggleButton dark={dark} color='var(--primary)' key={d.id}
-                                          onClick={() => setSelectedTheme(d.id)}
+                            <ToggleButton dark={isDark} key={d.id}
+                                          onClick={() => setSelectedTheme(d)}
                                           value={d.id}
                                           className="py-3 px-3 d-block w-100 h-auto">
                                 {d.id}
@@ -122,7 +131,7 @@ export default function ThemedButton(props: { dark: boolean }) {
     const renderMainFooter = () => (
         <Card rounded flat
               bordered
-              dark={dark}
+              dark={isDark}
               className="
               position-absolute
               mb-3
@@ -141,7 +150,10 @@ export default function ThemedButton(props: { dark: boolean }) {
               pt-3
               "
         >
-            <AddThemeButton dark={dark}/>
+            <div className="d-flex justify-content-center align-items-center me-auto ms-2">
+                <Button dark={isDark} onClick={() => toggleDarkMode(!isDark)}>Toggle Dark Mode</Button>
+            </div>
+            <AddThemeButton dark={isDark}/>
         </Card>
     )
 
@@ -149,7 +161,7 @@ export default function ThemedButton(props: { dark: boolean }) {
     return (
         <>
             {renderMainButton()}
-            <Dialog dark={dark} persistent={true} className="manage-theme-dialog" visible={showThemesListDialog}
+            <Dialog dark={isDark} persistent={true} className="manage-theme-dialog" visible={showThemesListDialog}
                     onClose={() => setShowThemesListDialog(false)}>
                 {renderMainCard()}
             </Dialog>

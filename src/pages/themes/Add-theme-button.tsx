@@ -61,7 +61,7 @@ export default function AddThemeButton(props: { dark: boolean }) {
     const renderMainButton = () => {
         return (
             <Button dark={dark} onClick={() => setShowAddThemesPageDialog(true)}
-                    className="border-0" color='var(--primary)'>Add
+                    className="border-0">Add
                 Theme</Button>
         )
     }
@@ -180,7 +180,7 @@ export default function AddThemeButton(props: { dark: boolean }) {
               pt-3
               "
         >
-            <Button dark={dark} onClick={() => saveTheme()} className="border-0" color='var(--primary)'>Save</Button>
+            <Button dark={dark} onClick={() => saveTheme()} className="border-0">Save</Button>
         </Card>
     )
 

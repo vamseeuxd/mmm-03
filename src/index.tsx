@@ -34,6 +34,7 @@ const firebaseProvider = {
     }
 }
 
+
 ReactDOM.render(
     /*<React.StrictMode>*/
     <FirebaseContext.Provider value={firebaseProvider}>
