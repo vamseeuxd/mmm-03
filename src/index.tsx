@@ -28,9 +28,9 @@ const firebaseProvider = {
         ref: themesRef,
         collection: themesCollection,
         path: 'themes',
-        getDoc: (id: string) => {
-            return db.doc(`themes/${id}`)
-        }
+        getDoc: (id?: string) => {
+            return id ? db.doc(`themes/${id}`) : themesRef.doc();
+        },
     }
 }
 

@@ -1,7 +1,7 @@
 import {mdiCloseThick} from "@mdi/js";
 import {Icon} from "@mdi/react";
 import React, {useContext, useEffect, useState} from "react";
-import {Button, Card, CardContent, Dialog, H6, IconButton, Subtitle2, TextField} from "ui-neumorphism";
+import {Button, Caption, Card, CardContent, Dialog, H6, IconButton, Subtitle2, TextField} from "ui-neumorphism";
 import {FirebaseContext, ITheme} from "../../providers/firebase-context";
 import firebase from "firebase/app";
 
@@ -28,7 +28,9 @@ export default function AddOrUpdateThemePage(props: { dark: boolean }) {
     const [selectedValues, setSelectedValues] = useState<ITheme>({
         "--light-bg-light-shadow": "#ffffff",
         "--dark-bg": "#444444",
-        "id": "default",
+        "id": "",
+        "name": "",
+        "default": false,
         "--dark-bg-light-shadow": "#525252",
         "--light-bg": "#E4EBF5",
         "createdAt": {"seconds": 1623954600, "nanoseconds": 0},
@@ -118,8 +120,14 @@ export default function AddOrUpdateThemePage(props: { dark: boolean }) {
         return (
             <div className="row mx-0">
                 <div className="col-12 align-items-center">
-                    <TextField dark={dark} onChange={(e: any) => updateValue('id', e.value)}
-                               value={selectedValues.id}
+                    <Subtitle2 dark={dark} className="m-0 ps-2 mb-2">
+                        Theme Name <code>*</code>
+                        <span className="fw-light m-0 ps-2 d-inline d-block" style={{fontSize: '10px'}}>
+                            unique & required & in between 3 to 15 characters
+                        </span>
+                    </Subtitle2>
+                    <TextField dark={dark} onChange={(e: any) => updateValue('name', e.value)}
+                               value={selectedValues.name}
                                label='Theme Name'
                                className='add-theme-input'/>
                 </div>
@@ -128,10 +136,9 @@ export default function AddOrUpdateThemePage(props: { dark: boolean }) {
                         // @ts-ignore
                         return (
                             <React.Fragment key={themeProp}>
-                                <div className="col-8 py-2 align-items-center">
-                                    <Subtitle2 dark={dark} className="ms-3 text-capitalize mb-0">{themeProp}</Subtitle2>
-                                </div>
-                                <div className="col-4 py-2 align-items-center">
+                                <div className="d-flex px-4 flex-row justify-content-between">
+                                    <Subtitle2 dark={dark}
+                                               className="text-capitalize d-inline-block">{themeProp}</Subtitle2>
                                     {
                                         /* @ts-ignore */
                                         <input defaultValue={selectedValues['--' + themeProp]}
@@ -150,12 +157,24 @@ export default function AddOrUpdateThemePage(props: { dark: boolean }) {
     }
 
     const saveTheme = async () => {
-        const docRef = themes.getDoc(selectedValues.id)
+        const docRef = themes.getDoc();
         await docRef.set({
             ...selectedValues,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
         setShowAddThemesPageDialog(false);
+    }
+
+    const isNameUnique = (): boolean => {
+        return themesList
+            .filter(d => d.id.toLowerCase() === selectedValues.name.trim().toLowerCase()).length === 0;
+    }
+
+    const isFormValid = (): boolean => {
+        return (
+            (selectedValues?.name?.trim().length > 2) &&
+            (selectedValues?.name?.trim().length < 16)
+        )
     }
 
     const renderMainFooter = () => (
@@ -168,6 +187,7 @@ export default function AddOrUpdateThemePage(props: { dark: boolean }) {
               bottom-0
               d-flex
               justify-content-end
+              flex-column
               align-items-center
               border-bottom-0
               border-start-0
@@ -180,7 +200,11 @@ export default function AddOrUpdateThemePage(props: { dark: boolean }) {
               pt-3
               "
         >
-            <Button dark={dark} onClick={() => saveTheme()} className="border-0">Save</Button>
+            {!isFormValid() &&
+            <Caption className="text-danger">Theme name should in between 3 to 15 characters</Caption>}
+            {!isNameUnique() && <Caption className="text-danger">Duplicate Theme Name, it should be Unique</Caption>}
+            <Button dark={dark} disabled={!isFormValid() || !isNameUnique()} onClick={() => saveTheme()}
+                    className="border-0 ms-auto">Save</Button>
         </Card>
     )
 

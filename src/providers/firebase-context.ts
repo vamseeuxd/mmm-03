@@ -12,7 +12,9 @@ export interface ITimeStamp {
 export interface ITheme {
     '--dark-bg': string;
     '--light-bg': string;
-    'id': string;
+    'id'?: string;
+    'name': string;
+    'default': boolean;
     '--primary': string;
     'createdAt': ITimeStamp;
     '--dark-bg-dark-shadow': string;

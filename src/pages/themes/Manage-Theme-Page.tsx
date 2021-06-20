@@ -111,15 +111,15 @@ export default function ManageThemePage() {
 
     const renderThemesList = () => {
         return (
-            <ToggleButtonGroup dark={isDark} value={selectedTheme?.id} className="mt-2" multiple={false}>
+            <ToggleButtonGroup dark={isDark} value={selectedTheme?.name} className="mt-2" multiple={false}>
                 {
                     themesList && themesList.map(d => {
                         return (
-                            <ToggleButton dark={isDark} key={d.id}
+                            <ToggleButton dark={isDark} key={d.name}
                                           onClick={() => setSelectedTheme(d)}
-                                          value={d.id}
+                                          value={d.name}
                                           className="py-3 px-3 d-block w-100 h-auto">
-                                {d.id}
+                                {d.name}
                             </ToggleButton>
                         )
                     })
