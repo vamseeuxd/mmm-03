@@ -1,4 +1,4 @@
-import {mdiCloseThick, mdiOpacity} from "@mdi/js";
+import {mdiCloseThick, mdiLeadPencil, mdiOpacity, mdiTrashCanOutline} from "@mdi/js";
 import {Icon} from "@mdi/react";
 import React, {useContext, useEffect, useState} from "react";
 import {
@@ -109,6 +109,14 @@ export default function ManageThemePage() {
         </CardContent>
     )
 
+    const editTheme = (e: MouseEvent, theme: ITheme) => {
+        e.stopPropagation();
+    }
+
+    const deleteTheme = (e: MouseEvent, theme: ITheme) => {
+        e.stopPropagation();
+    }
+
     const renderThemesList = () => {
         return (
             <ToggleButtonGroup dark={isDark} value={selectedTheme?.name} className="mt-2" multiple={false}>
@@ -118,8 +126,18 @@ export default function ManageThemePage() {
                             <ToggleButton dark={isDark} key={d.name}
                                           onClick={() => setSelectedTheme(d)}
                                           value={d.name}
-                                          className="py-3 px-3 d-block w-100 h-auto">
-                                {d.name}
+                                          className="toggle-button-content py-3 px-3 d-block w-100 h-auto">
+                                <div className="d-flex justify-content-between align-items-center w-100">
+                                    {d.name}
+                                    <div>
+                                        <IconButton disabled={selectedTheme?.name === d.name}
+                                                    onClick={(e: MouseEvent) => editTheme(e, d)} dark={isDark}><Icon
+                                            path={mdiLeadPencil} size={1}/></IconButton>
+                                        <IconButton disabled={selectedTheme?.name === d.name}
+                                                    onClick={(e: MouseEvent) => deleteTheme(e, d)} dark={isDark}><Icon
+                                            path={mdiTrashCanOutline} size={1}/></IconButton>
+                                    </div>
+                                </div>
                             </ToggleButton>
                         )
                     })
