@@ -6,6 +6,7 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import {FirebaseProvider} from "./providers/firebase-context/firebase-context";
 import {ThemeProvider} from "./providers/theme-context/theme-context";
+require('dotenv').config();
 
 ReactDOM.render(
     /*<React.StrictMode>*/
