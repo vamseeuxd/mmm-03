@@ -19,7 +19,7 @@ import {
 } from "ui-neumorphism";
 import {FirebaseContext, ITheme} from "../../providers/firebase-context";
 import firebase from "firebase/app";
-import {ThemeContext} from "../../providers/theme-context";
+import {ThemeContext} from "../../providers/theme-context/theme-context";
 
 const defaultTheme = {
     "--light-bg-light-shadow": "#ffffff",

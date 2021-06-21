@@ -14,7 +14,7 @@ import {
 } from "ui-neumorphism";
 import AddOrUpdateThemePage from "./Add-Or-Update-Theme-Page";
 import {FirebaseContext, ITheme} from "../../providers/firebase-context";
-import {ThemeContext} from "../../providers/theme-context";
+import {ThemeContext} from "../../providers/theme-context/theme-context";
 
 
 export default function ManageThemePage() {

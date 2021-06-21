@@ -6,7 +6,7 @@ import {Card, Dialog} from 'ui-neumorphism';
 import Footer from "./layout/Footer";
 import Header from "./layout/Header";
 import MainMenu from "./layout/MainMenu";
-import {ThemeContext} from "./providers/theme-context";
+import {ThemeProvider} from "./providers/theme-context/theme-context";
 
 function App() {
     const isDarkTheme = window.localStorage.getItem('isDarkTheme');
@@ -31,7 +31,7 @@ function App() {
     }, [isDark]);
 
     return (
-        <ThemeContext.Provider value={{isDark, toggleDarkMode}}>
+        <ThemeProvider>
             <Card flat dark={isDark} className={mainPageClasses}>
                 <Card rounded dark={isDark} className='main-page-container'>
                     <Header toggleMainMenu={toggleMainMenu} dark={isDark}/>
@@ -43,7 +43,7 @@ function App() {
                     <MainMenu toggleMainMenu={toggleMainMenu} dark={isDark}/>
                 </Dialog>
             </Card>
-        </ThemeContext.Provider>
+        </ThemeProvider>
     );
 }
 
