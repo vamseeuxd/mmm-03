@@ -17,7 +17,7 @@ import {
     Tabs,
     TextField
 } from "ui-neumorphism";
-import {FirebaseContext, ITheme} from "../../providers/firebase-context";
+import {FirebaseContext, ITheme} from "../../providers/firebase-context/firebase-context";
 import firebase from "firebase/app";
 import {ThemeContext} from "../../providers/theme-context/theme-context";
 

@@ -13,7 +13,7 @@ import {
     ToggleButtonGroup
 } from "ui-neumorphism";
 import AddOrUpdateThemePage from "./Add-Or-Update-Theme-Page";
-import {FirebaseContext, ITheme} from "../../providers/firebase-context";
+import {FirebaseContext, ITheme} from "../../providers/firebase-context/firebase-context";
 import {ThemeContext} from "../../providers/theme-context/theme-context";
 
 

@@ -6,7 +6,6 @@ import {Card, Dialog} from 'ui-neumorphism';
 import Footer from "./layout/Footer";
 import Header from "./layout/Header";
 import MainMenu from "./layout/MainMenu";
-import {ThemeProvider} from "./providers/theme-context/theme-context";
 
 function App() {
     const isDarkTheme = window.localStorage.getItem('isDarkTheme');
@@ -31,19 +30,17 @@ function App() {
     }, [isDark]);
 
     return (
-        <ThemeProvider>
-            <Card flat dark={isDark} className={mainPageClasses}>
-                <Card rounded dark={isDark} className='main-page-container'>
-                    <Header toggleMainMenu={toggleMainMenu} dark={isDark}/>
-                    <Footer dark={isDark}/>
-                </Card>
-                <Dialog dark={isDark} persistent={true} className='main-menu-dialog' minWidth={300}
-                        visible={showMainMenu}
-                        onClose={() => setShowMainMenu(false)}>
-                    <MainMenu toggleMainMenu={toggleMainMenu} dark={isDark}/>
-                </Dialog>
+        <Card flat dark={isDark} className={mainPageClasses}>
+            <Card rounded dark={isDark} className='main-page-container'>
+                <Header toggleMainMenu={toggleMainMenu} dark={isDark}/>
+                <Footer dark={isDark}/>
             </Card>
-        </ThemeProvider>
+            <Dialog dark={isDark} persistent={true} className='main-menu-dialog' minWidth={300}
+                    visible={showMainMenu}
+                    onClose={() => setShowMainMenu(false)}>
+                <MainMenu toggleMainMenu={toggleMainMenu} dark={isDark}/>
+            </Dialog>
+        </Card>
     );
 }
 

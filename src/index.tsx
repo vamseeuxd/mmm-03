@@ -4,42 +4,16 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import {FirebaseContext, ITheme} from "./providers/firebase-context";
-import firebase from "firebase";
-import {collectionData} from "rxfire/firestore";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyBUFGjf40MOCAVJ6HW5AgxX93qy8LRgP64",
-    authDomain: "mmm-03.firebaseapp.com",
-    projectId: "mmm-03",
-    storageBucket: "mmm-03.appspot.com",
-    messagingSenderId: "768663313224",
-    appId: "1:768663313224:web:cc86d468ec536ba2f5f17d",
-    measurementId: "G-351BLTK5TP"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = app.firestore();
-const themesRef = db.collection('themes');
-themesRef.orderBy('createdAt');
-const themesCollection = collectionData<ITheme>(themesRef, 'id');
-const firebaseProvider = {
-    themes: {
-        ref: themesRef,
-        collection: themesCollection,
-        path: 'themes',
-        getDoc: (id?: string) => {
-            return id ? db.doc(`themes/${id}`) : themesRef.doc();
-        },
-    }
-}
-
+import {FirebaseProvider} from "./providers/firebase-context/firebase-context";
+import {ThemeProvider} from "./providers/theme-context/theme-context";
 
 ReactDOM.render(
     /*<React.StrictMode>*/
-    <FirebaseContext.Provider value={firebaseProvider}>
+    <FirebaseProvider>
+        <ThemeProvider>
         <App/>
-    </FirebaseContext.Provider>
+        </ThemeProvider>
+    </FirebaseProvider>
     /*</React.StrictMode>*/,
     document.getElementById('root')
 );
