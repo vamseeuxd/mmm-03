@@ -178,7 +178,7 @@ export default function ManageThemePage() {
             <div className="d-flex justify-content-center align-items-center me-auto ms-2">
                 <Button dark={isDark} onClick={() => toggleDarkMode(!isDark)}>Toggle Dark Mode</Button>
             </div>
-            <AddOrUpdateThemePage ref={addOrUpdateThemeRef} isEdit={isEdit} themeToEdit={themeToEdit} dark={isDark}/>
+            <AddOrUpdateThemePage lastSelectedTheme={selectedTheme} ref={addOrUpdateThemeRef} isEdit={isEdit} themeToEdit={themeToEdit}/>
         </Card>
     )
 

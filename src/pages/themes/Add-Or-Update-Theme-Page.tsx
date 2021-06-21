@@ -9,6 +9,7 @@ import {
     Dialog,
     H6,
     IconButton,
+    overrideThemeVariables,
     Subtitle2,
     Tab,
     TabItem,
@@ -18,6 +19,7 @@ import {
 } from "ui-neumorphism";
 import {FirebaseContext, ITheme} from "../../providers/firebase-context";
 import firebase from "firebase/app";
+import {ThemeContext} from "../../providers/theme-context";
 
 const defaultTheme = {
     "--light-bg-light-shadow": "#ffffff",
@@ -36,34 +38,55 @@ const defaultTheme = {
 };
 
 const AddOrUpdateThemePage = forwardRef((props: {
-                                             dark: boolean,
                                              isEdit: boolean,
+                                             lastSelectedTheme: ITheme,
                                              themeToEdit: ITheme | null,
                                              ref: any,
                                          },
                                          ref) => {
 
-    const {dark, themeToEdit} = props;
-    const [showAddThemesPageDialog, setShowAddThemesPageDialog] = useState(false);
-    const [themeProps] = useState<string[]>([
-        'light-bg',
-        'light-bg-dark-shadow',
-        'light-bg-light-shadow',
-        'dark-bg',
-        'dark-bg-dark-shadow',
-        'dark-bg-light-shadow',
-        'primary',
-        'primary-dark',
-        'primary-light',
+    const {isDark, toggleDarkMode} = useContext(ThemeContext);
+    const {themeToEdit, lastSelectedTheme} = props;
+    const [lastSelectedDarkMode] = useState(false);
+    const [showAddThemesPageDialog, setShowAddThemesPageDialog] = useState(isDark);
+    const [themeProps] = useState<Array<Array<string>>>([
+        [
+            'light-bg',
+            'light-bg-dark-shadow',
+            'light-bg-light-shadow',
+            'primary-light',
+            'primary',
+        ],
+        [
+            'dark-bg',
+            'dark-bg-dark-shadow',
+            'dark-bg-light-shadow',
+            'primary-dark'
+        ]
     ]);
     // @ts-ignore
     const {themes} = useContext(FirebaseContext);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [themesList, setThemesList] = useState<any[]>([]);
     const [isEdit, setIsEdit] = useState<boolean>(props.isEdit);
-    const [activeTabIndex, setActiveTabIndex] = useState<Number>(0);
-    const [selectedValues, setSelectedValues] = useState<ITheme>(
-        (isEdit && themeToEdit) ? themeToEdit : defaultTheme);
+    const [activeTabIndex, setActiveTabIndex] = useState<Number>(isDark ? 1 : 0);
+    const [selectedValues, setSelectedValues] = useState<ITheme>((isEdit && themeToEdit) ? themeToEdit : defaultTheme);
+
+    useEffect(() => {
+        if (activeTabIndex === 1) {
+            toggleDarkMode(true);
+        } else {
+            toggleDarkMode(false);
+        }
+    }, [activeTabIndex, toggleDarkMode]);
+
+    useEffect(() => {
+        if (!showAddThemesPageDialog) {
+            overrideThemeVariables(lastSelectedTheme);
+            toggleDarkMode(lastSelectedDarkMode);
+            setActiveTabIndex(lastSelectedDarkMode ? 1 : 0);
+        }
+    }, [lastSelectedDarkMode, lastSelectedTheme, showAddThemesPageDialog, toggleDarkMode]);
 
     useEffect(() => {
         const _theme = window.localStorage.getItem('selectedTheme');
@@ -89,7 +112,7 @@ const AddOrUpdateThemePage = forwardRef((props: {
 
     const renderMainButton = () => {
         return (
-            <Button dark={dark} onClick={() => {
+            <Button dark={isDark} onClick={() => {
                 setShowAddThemesPageDialog(true);
                 setIsEdit(false);
                 setSelectedValues(defaultTheme);
@@ -98,7 +121,7 @@ const AddOrUpdateThemePage = forwardRef((props: {
     }
 
     const renderMainCard = () => (
-        <Card dark={dark} rounded elevation={5} className="manage-theme-card add-them-card">
+        <Card dark={isDark} rounded elevation={5} className="manage-theme-card add-them-card">
             {renderMainHeader()}
             {renderMainContent()}
             {renderMainFooter()}
@@ -106,7 +129,7 @@ const AddOrUpdateThemePage = forwardRef((props: {
     )
 
     const renderMainHeader = () => (
-        <Card dark={dark} rounded flat bordered
+        <Card dark={isDark} rounded flat bordered
               className="
               d-flex
               rounded-0
@@ -118,8 +141,8 @@ const AddOrUpdateThemePage = forwardRef((props: {
               border-end-0
               "
         >
-            <H6 dark={dark} className="ms-3 mt-2">Add New Theme</H6>
-            <IconButton dark={dark} onClick={() => setShowAddThemesPageDialog(false)}
+            <H6 dark={isDark} className="ms-3 mt-2">Add New Theme</H6>
+            <IconButton dark={isDark} onClick={() => setShowAddThemesPageDialog(false)}
                         className="mt-3 mb-2 border-0"
                         text={false}
                         size='small'
@@ -131,8 +154,8 @@ const AddOrUpdateThemePage = forwardRef((props: {
 
 
     const renderMainContent = () => (
-        <CardContent dark={dark}>
-            <Card dark={dark} className="py-2 ps-2" style={{height: 'calc(100vh - 275px)', overflowY: 'auto'}} inset>
+        <CardContent dark={isDark}>
+            <Card dark={isDark} className="py-2 ps-2" style={{height: 'calc(100vh - 275px)', overflowY: 'auto'}} inset>
                 {renderAddThemeForm()}
             </Card>
         </CardContent>
@@ -143,15 +166,21 @@ const AddOrUpdateThemePage = forwardRef((props: {
             ...selectedValues,
             [prop]: value
         });
+        overrideThemeVariables(
+            {
+                ...selectedValues,
+                [prop]: value
+            }
+        );
     };
 
     const getFormControlsByTheme = (isDark = false) => {
-        return themeProps.filter(d => (d.toLowerCase().indexOf(isDark ? 'dark' : 'light') >= 0)).map(themeProp => {
+        return themeProps[isDark ? 1 : 0].map(themeProp => {
             // @ts-ignore
             return (
                 <React.Fragment key={themeProp}>
                     <div className="d-flex px-4 flex-row justify-content-between">
-                        <Subtitle2 dark={dark}
+                        <Subtitle2 dark={isDark}
                                    className="text-capitalize d-inline-block">{themeProp}</Subtitle2>
                         {
                             /* @ts-ignore */
@@ -171,34 +200,45 @@ const AddOrUpdateThemePage = forwardRef((props: {
         return (
             <div className="row mx-0">
                 <div className="col-12 align-items-center">
-                    <Subtitle2 dark={dark} className="m-0 ps-2 mb-2">
+                    <Subtitle2 dark={isDark} className="m-0 ps-2 mb-2">
                         Theme Name <code>*</code>
                         <span className="fw-light m-0 ps-2 d-inline d-block" style={{fontSize: '10px'}}>
                             unique & required & in between 3 to 15 characters
                         </span>
                     </Subtitle2>
-                    <TextField dark={dark} onChange={(e: any) => updateValue('name', e.value)}
+                    <TextField dark={isDark} onChange={(e: any) => updateValue('name', e.value)}
                                value={selectedValues.name}
                                label='Theme Name'
                                className='add-theme-input'/>
                 </div>
                 <div className="d-flex px-3 flex-row justify-content-between">
-                    <div className="w-100">
-                        <Tabs dark={dark} value={activeTabIndex}
-                              onChange={(e: any) => setActiveTabIndex(e.active)}>
-                            <Tab dark={dark}>Drak Mode</Tab>
-                            <Tab dark={dark}>Light Mode</Tab>
-                        </Tabs>
+                    <Card dark={isDark} className="w-100">
+                        <CardContent>
+                            <div className="w-100">
+                                <Tabs dark={isDark} value={activeTabIndex}
+                                      onChange={(e: any) => {
+                                          setActiveTabIndex(e.active)
+                                      }
+                                      }>
+                                    <Tab dark={isDark}>Light Mode</Tab>
+                                    <Tab dark={isDark}>Dark Mode</Tab>
+                                </Tabs>
 
-                        <TabItems dark={dark} value={activeTabIndex}>
-                            <TabItem dark={dark}>
-                                {getFormControlsByTheme(true)}
-                            </TabItem>
-                            <TabItem dark={dark}>
-                                {getFormControlsByTheme()}
-                            </TabItem>
-                        </TabItems>
-                    </div>
+                                <TabItems dark={isDark} value={activeTabIndex}>
+                                    <TabItem style={{'marginTop': '-8px'}} dark={isDark}>
+                                        <Card inset className="rounded-0 pt-3" dark={isDark}>
+                                            {getFormControlsByTheme()}
+                                        </Card>
+                                    </TabItem>
+                                    <TabItem style={{'marginTop': '-8px'}} dark={isDark}>
+                                        <Card inset className="rounded-0 pt-3" dark={isDark}>
+                                            {getFormControlsByTheme(true)}
+                                        </Card>
+                                    </TabItem>
+                                </TabItems>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         )
@@ -222,7 +262,6 @@ const AddOrUpdateThemePage = forwardRef((props: {
     }
 
     const isNameUnique = (): boolean => {
-        debugger;
         if (isEdit) {
             return themesList
                 .filter(
@@ -247,7 +286,7 @@ const AddOrUpdateThemePage = forwardRef((props: {
 
     const renderMainFooter = () => (
         <Card rounded flat
-              dark={dark}
+              dark={isDark}
               bordered
               className="
               position-absolute
@@ -271,7 +310,7 @@ const AddOrUpdateThemePage = forwardRef((props: {
             {!isFormValid() &&
             <Caption className="text-danger">Theme name should in between 3 to 15 characters</Caption>}
             {!isNameUnique() && <Caption className="text-danger">Duplicate Theme Name, it should be Unique</Caption>}
-            <Button dark={dark} disabled={!isFormValid() || !isNameUnique()} onClick={() => saveTheme()}
+            <Button dark={isDark} disabled={!isFormValid() || !isNameUnique()} onClick={() => saveTheme()}
                     className="border-0 ms-auto">Save</Button>
         </Card>
     )
@@ -280,7 +319,7 @@ const AddOrUpdateThemePage = forwardRef((props: {
     return (
         <>
             {renderMainButton()}
-            <Dialog dark={dark} persistent={true} className="manage-theme-dialog" visible={showAddThemesPageDialog}
+            <Dialog dark={isDark} persistent={true} className="manage-theme-dialog" visible={showAddThemesPageDialog}
                     onClose={() => setShowAddThemesPageDialog(false)}>
                 {renderMainCard()}
             </Dialog>
