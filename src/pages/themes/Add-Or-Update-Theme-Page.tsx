@@ -73,12 +73,16 @@ const AddOrUpdateThemePage = forwardRef((props: {
     const [selectedValues, setSelectedValues] = useState<ITheme>((isEdit && themeToEdit) ? themeToEdit : defaultTheme);
 
     useEffect(() => {
-        if (activeTabIndex === 1) {
-            toggleDarkMode(true);
-        } else {
-            toggleDarkMode(false);
+        if (showAddThemesPageDialog) {
+            if (activeTabIndex === 1) {
+                toggleDarkMode(true);
+                overrideThemeVariables(selectedValues);
+            } else {
+                toggleDarkMode(false);
+                overrideThemeVariables(selectedValues);
+            }
         }
-    }, [activeTabIndex, toggleDarkMode]);
+    }, [activeTabIndex, lastSelectedTheme, toggleDarkMode, showAddThemesPageDialog, selectedValues]);
 
     useEffect(() => {
         if (!showAddThemesPageDialog) {

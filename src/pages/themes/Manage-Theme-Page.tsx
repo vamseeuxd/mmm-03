@@ -120,8 +120,13 @@ export default function ManageThemePage() {
         addOrUpdateThemeRef?.current?.setShowDialog(true, theme, true);
     }
 
-    const deleteTheme = (e: MouseEvent, theme: ITheme) => {
+    const deleteTheme = async (e: MouseEvent, theme: ITheme) => {
         e.stopPropagation();
+        const isConfirmed = window.confirm('Are you sure!Do you want to delete theme?');
+        if (isConfirmed) {
+            const docRef = themes.getDoc(theme.id);
+            await docRef.delete();
+        }
     }
 
     const renderThemesList = () => {
@@ -137,10 +142,10 @@ export default function ManageThemePage() {
                                 <div className="d-flex justify-content-between align-items-center w-100">
                                     {d.name}
                                     <div>
-                                        <IconButton disabled={selectedTheme?.name === d.name}
+                                        <IconButton disabled={selectedTheme?.name === d.name || d.default}
                                                     onClick={(e: MouseEvent) => editTheme(e, d)} dark={isDark}><Icon
                                             path={mdiLeadPencil} size={1}/></IconButton>
-                                        <IconButton disabled={selectedTheme?.name === d.name}
+                                        <IconButton disabled={selectedTheme?.name === d.name || d.default}
                                                     onClick={(e: MouseEvent) => deleteTheme(e, d)} dark={isDark}><Icon
                                             path={mdiTrashCanOutline} size={1}/></IconButton>
                                     </div>
@@ -178,7 +183,8 @@ export default function ManageThemePage() {
             <div className="d-flex justify-content-center align-items-center me-auto ms-2">
                 <Button dark={isDark} onClick={() => toggleDarkMode(!isDark)}>Toggle Dark Mode</Button>
             </div>
-            <AddOrUpdateThemePage lastSelectedTheme={selectedTheme} ref={addOrUpdateThemeRef} isEdit={isEdit} themeToEdit={themeToEdit}/>
+            <AddOrUpdateThemePage lastSelectedTheme={selectedTheme} ref={addOrUpdateThemeRef} isEdit={isEdit}
+                                  themeToEdit={themeToEdit}/>
         </Card>
     )
 
