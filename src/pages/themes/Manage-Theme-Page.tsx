@@ -62,6 +62,7 @@ export default function ManageThemePage() {
         return (
             <IconButton onClick={() => setShowThemesListDialog(true)}
                         dark={isDark}
+                        style={{marginRight: '-15px'}}
                         className="ms-auto border-0"
                         rounded
                         text={false}>
